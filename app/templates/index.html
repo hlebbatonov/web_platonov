@@ -1,12 +1,20 @@
-<html>
-  <head>
-    {% if title %}
-    <title>{{title}} - microblog</title>
-    {% else %}
-    <title>Welcome to microblog</title>
-    {% endif %}
-  </head>
-  <body>
-      <h1>Hello, {{user.nickname}}!</h1>
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Добро пожаловать на страницу проекта Timetable!</h1>
+<a href="/register">
+    <button type="button" class="btn btn-primary">Регистрация</button>
+</a>
+{% for item in news%}
+<div class="col-md6 border rounded">
+    <h2>{{item.title}}</h2>
+    <div>
+        {{item.content}}
+    </div>
+    <div>
+        Автор - {{item.user.name}}, Дата написания - {{item.created_date}}
+    </div>
+
+</div>
+{% endfor %}
+{% endblock %}
