@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Добавление расписания</h1>
+ <a href="/admin_rules">
+        <button type="button" class="btn btn-primary">Правила заполнения .csv файла</button>
+ </a>
+<form enctype="multipart/form-data" method="post">
+   <p><input type="file" name="f">
+   <input type="submit" value="Отправить"></p>
+  </form>
+{%endblock%}
