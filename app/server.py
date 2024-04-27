@@ -1,18 +1,28 @@
 from flask import render_template
 from flask import Flask
 from flask import redirect
-from flask import session
+from flask import request
 from forms.user import RegisterForm, LoginForm
 from data.users import User
 from data import db_session
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, login_user
+import os
+from werkzeug.utils import secure_filename
+from data.table_loader import view
+from app.timetable_db.timetable_db import *
+
 host = '127.0.0.1'
 port = 5000
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-
+UPLOAD_FOLDER = './uploads'
+ALLOWED_EXTENSION = {'csv'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSION
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
@@ -68,7 +78,15 @@ def login():
     return render_template('login.html', title='Авторизация', form=form)
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+    if request.method == 'POST':
+        table = request.files['table']
+
+        filename = secure_filename(table.filename)
+        if table and allowed_file(table.filename):
+            table.save(f"{app.config['UPLOAD_FOLDER']}/{filename}")
+        #abspath = str(os.path.abspath(f"{app.config['UPLOAD_FOLDER']}/{table.filename}")).replace('\\', '/')
     return render_template('admin.html')
+
 if __name__ == '__main__':
     main()
 
