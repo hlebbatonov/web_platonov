@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Добро пожаловать на страницу проекта Timetable!</h1>
-<h2>Просмотр расписания</h2>
+
 {% if current_user.is_authenticated == 0 %}
+    <h1>Добро пожаловать на страницу проекта Timetable!</h1>
     <a href="/register">
         <button type="button" class="btn btn-primary">Регистрация</button>
     </a>
@@ -11,18 +11,45 @@
         <button type="button" class="btn btn-success">Вход</button>
     </a>
 {%else%}
-    <input type="date" id="start" name="trip-start" value={{curr_date}} min="2023-01-01" max="2026-12-31" />
-{%endif%}
-{% for item in news%}
-<div class="col-md6 border rounded">
-    <h2>{{item.title}}</h2>
-    <div>
-        {{item.content}}
-    </div>
-    <div>
-        Автор - {{item.user.name}}, Дата написания - {{item.created_date}}
-    </div>
+    <h1>Просмотр расписания</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.date.label }}<br>
+            {{ form.date(class="form-control", type="date", value = curr_date)}}<br>
+            {% for error in form.date.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    </form>
+    {% if timetable_is_not_found == 1 %}
+    <h3>Расписание для вашей группы на сегодня не найдено</h3>
+    {% elif button_not_pushed == 0 %}
+    <table>
+        <caption>
+            Расписание группы {{group}} на {{date}}
+        </caption>
+          <thead>
+            <tr>
+              <th scope="col">Время</th>
+              <th scope="col">Занятие</th>
+              <th scope="col">Место проведения</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for list in user_timetable %}
+                <tr>
+                    {% for item in list %}
+                        <td>{{item}}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
 
-</div>
-{% endfor %}
+    {% endif %}
+{% endif %}
 {% endblock %}

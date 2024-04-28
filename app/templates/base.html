@@ -10,6 +10,11 @@
     <header>
       <nav class="navbar navbar-light bg-light">
         <a class="navbar-brand" href="/">Timetable</a>
+        {% if current_user.is_authenticated == 1%}
+          <a href="/logout">
+        <button type="button" class="btn btn-danger">Выйти</button>
+    </a>
+        {% endif %}
       </nav>
     </header>
     <!-- Begin page content -->
