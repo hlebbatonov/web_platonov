@@ -3,15 +3,15 @@
 {% block content %}
 
 {% if current_user.is_authenticated == 0 %}
-    <h1>Добро пожаловать на страницу проекта Timetable!</h1>
+    <h1>Welcome to "Timetable" project!</h1>
     <a href="/register">
-        <button type="button" class="btn btn-primary">Регистрация</button>
+        <button type="button" class="btn btn-primary">Sign up</button>
     </a>
     <a href="/login">
-        <button type="button" class="btn btn-success">Вход</button>
+        <button type="button" class="btn btn-success">Log in</button>
     </a>
 {%else%}
-    <h1>Просмотр расписания</h1>
+    <h1>View schedule</h1>
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
@@ -26,17 +26,17 @@
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     </form>
     {% if timetable_is_not_found == 1 %}
-    <h3>Расписание для вашей группы на сегодня не найдено</h3>
+    <h3>This day's schedule for your group isn't found :(</h3>
     {% elif button_not_pushed == 0 %}
     <table>
         <caption>
-            Расписание группы {{group}} на {{date}}
+            Schedule of {{group}} group for {{date}}
         </caption>
           <thead>
             <tr>
-              <th scope="col">Время</th>
-              <th scope="col">Занятие</th>
-              <th scope="col">Место проведения</th>
+              <th scope="col">Time</th>
+              <th scope="col">Subject</th>
+              <th scope="col">Place</th>
             </tr>
           </thead>
           <tbody>
@@ -49,7 +49,9 @@
             {% endfor %}
           </tbody>
         </table>
-
+        <a href="/download_timetable">
+        <button type="button" class="btn btn-success">Download as file</button>
+    </a>
     {% endif %}
 {% endif %}
 {% endblock %}

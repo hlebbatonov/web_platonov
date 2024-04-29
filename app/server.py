@@ -5,14 +5,16 @@ from flask import request
 from forms.user import RegisterForm, LoginForm, Date
 from data.users import User, Table
 from data import db_session
-from flask import session
+from flask import send_file
 from flask_login import LoginManager, login_user, current_user, logout_user
 import os
 import datetime
 from werkzeug.utils import secure_filename
 from data.table_loader import view
 from timetable_db import timetable_edit
-
+from files_for_converting import files_conventer
+import csv
+import convertapi
 host = '127.0.0.1'
 port = 5000
 app = Flask(__name__)
@@ -24,7 +26,7 @@ ALLOWED_EXTENSION = {'csv'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 curr_user_group = ''
 curr_user_is_admin = 0
-
+user_timetable = []
 # app.config['PERMANENT_SESSION_LIFETIME'] = False
 
 
@@ -65,6 +67,7 @@ def logout():
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
+    global user_timetable
     if curr_user_is_admin != 0:
         return redirect('/admin')
     else:
@@ -82,7 +85,22 @@ def index():
                                        user_timetable=user_timetable, button_not_pushed=0, group=curr_user_group, date=date)
         return render_template("index.html", form=form, curr_date=str(datetime.date.today()), timetable_is_not_found=0,
                                button_not_pushed=1)
-
+@app.route('/download_timetable', methods=['GET'])
+def download_timetable():
+    with open(f'files_for_converting/export.csv', encoding='utf-8', mode='w') as csvfile:
+        writer = csv.writer(csvfile, delimiter=';')
+        writer.writerow(['time', 'subject', 'place'])
+        for i in user_timetable:
+            writer.writerow(i)
+    convertapi.api_secret = 'm79kk5eVwEENi0pB'
+    convertapi.convert('pdf', {
+        'File': 'export.csv',
+        'AutoFit': 'true',
+        'Scale': '200'
+    }, from_format='csv').save_files('files_for_converting/export/export.pdf')
+    print('converted')
+    path = os.path.abspath('files_for_converting\\export\\export.pdf')
+    return send_file(path, as_attachment=False)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
