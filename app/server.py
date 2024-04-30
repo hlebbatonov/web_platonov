@@ -88,13 +88,14 @@ def index():
 @app.route('/download_timetable', methods=['GET'])
 def download_timetable():
     with open(f'files_for_converting/export.csv', encoding='utf-8', mode='w') as csvfile:
-        writer = csv.writer(csvfile, delimiter=';')
+        writer = csv.writer(csvfile, delimiter=',')
         writer.writerow(['time', 'subject', 'place'])
         for i in user_timetable:
+            i = list(map(lambda x: f'"{x}"', i))
             writer.writerow(i)
     convertapi.api_secret = 'm79kk5eVwEENi0pB'
     convertapi.convert('pdf', {
-        'File': 'export.csv',
+        'File': 'files_for_converting/export.csv',
         'AutoFit': 'true',
         'Scale': '200'
     }, from_format='csv').save_files('files_for_converting/export/export.pdf')
@@ -151,7 +152,9 @@ def login():
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    if curr_user_is_admin == 0:
+    global curr_user_is_admin
+    if curr_user_is_admin == 0 or not current_user.is_authenticated:
+        curr_user_is_admin = 0
         return redirect('/')
     else:
         if request.method == 'POST':

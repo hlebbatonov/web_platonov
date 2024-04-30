@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Timetable adding</h1>
- <a href="/admin_rules">
-        <button type="button" class="btn btn-info">How should I write .csv file?</button>
- </a>
 <form enctype="multipart/form-data" method="post">
    <p><input type="file" name="table" accept=".csv" value="Choose file">
    <input type="submit" value="Upload"></p>

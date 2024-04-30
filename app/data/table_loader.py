@@ -1,6 +1,4 @@
 import csv
-import os
-id = 0
 
 
 def view(abspath):
